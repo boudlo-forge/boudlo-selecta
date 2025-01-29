@@ -1,0 +1,101 @@
+.bds_wrapper {
+  position: relative;
+  display: inline;
+}
+
+.bds_fakeTagInput {
+  z-index: 98;
+}
+
+.bds_dropselect {
+  position: absolute;
+  top: 0;
+}
+
+.bds_dropselect.open {
+  z-index: 101;
+  padding-top: 0.2em;
+  border-left: 1px solid;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+  box-shadow: 0 1px 7px 0 rgba(0,0,0,0.4), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+.bds_dropselect > .bds_option {
+  background-color: #bbb;
+  font-size: 1em;
+  padding: 0.1em 0.1em;
+  border-top: 1px solid grey;
+  cursor: pointer;
+}
+
+.bds_option.selected {
+  background-color: #eeffee;
+}
+
+.bds_option.selected:after {
+  content: '\2713';
+  display: inline-block;
+  float: right;
+  color: green;
+  padding: 0 6px 0 0;
+  position: absolute;
+}
+
+.bds_dropselect > .bds_option:hover {
+  background-color: #666;
+  color: white;
+}
+
+.bds_dropselect > .bds_option.selected:hover {
+  background-color: #FEE;
+  color: revert;
+}
+
+.bds_option.selected:hover:after {
+  content: '\2A09';
+  display: inline-block;
+  float: right;
+  color: red;
+  padding: 0 6px 0 0;
+}
+
+.bds_dropselect.closed > .bds_option {
+  display: none;
+}
+
+.bds_dropselect.closed > .bds_option.disabled {
+  display: block;
+}
+
+.bds_displaybox {
+  position: absolute;
+  z-index: 99;
+  display: inline-block;
+  white-space: nowrap;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.bds_displaybox:hover,
+.bds_displaybox:active,
+.bds_displaybox:focus {
+  overflow-y: scroll;
+}
+
+.bds_displaybox::-webkit-scrollbar {
+  display: none;
+}
+
+.bds_displaybox span {
+  margin: 0.3em 0 0 0.3em;
+  padding: 0.1em;
+  font-size: 0.7em;
+  display: inline-block;
+  max-width: 70%;
+  overflow-x: hidden;
+  border-radius: 2px;
+  background-color: #bbb;
+}
