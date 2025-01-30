@@ -1,7 +1,14 @@
+let bdsInputClassOverride = 'form-control';
+
 document.addEventListener("DOMContentLoaded", (event) => {
+
   let multiSelectors = document.querySelectorAll('[data-boudlo-selecta]');
   // console.log(multiSelectors);
   let multiSelectorArr = [...multiSelectors]; // converts NodeList to Array
+
+  let multiSelectMask = document.createElement('div');
+  multiSelectMask.classList.add('bds_multiselect_mask');
+  document.body.prepend(multiSelectMask);
   
   multiSelectorArr.forEach(originalSelector => {
 		processOptions(originalSelector);
@@ -49,12 +56,17 @@ document.addEventListener("DOMContentLoaded", (event) => {
     dropSelect.id = originalSelector.id + "_bds_dropselect";
     dropSelect.classList.add("bds_dropselect");
     dropSelect.classList.add("closed");
-    wrapper.appendChild(dropSelect);
+    wrapper.prepend(dropSelect);
     
     let fakeTagInput = document.createElement("input");
     fakeTagInput.id = originalSelector.id + "_bds_fakeTagInput";
     fakeTagInput.classList.add("bds_fakeTagInput");
-    dropSelect.prepend(fakeTagInput);
+
+    if(typeof bdsInputClassOverride === 'string') {
+      fakeTagInput.classList.add(bdsInputClassOverride);
+    }
+
+    wrapper.prepend(fakeTagInput);
 
     var width = fakeTagInput.offsetWidth;
     var height = fakeTagInput.offsetHeight;
@@ -65,20 +77,33 @@ document.addEventListener("DOMContentLoaded", (event) => {
     displayBox.classList.add("bds_displaybox");
     displayBox.style.height = height + 'px';
     displayBox.style.width = width + 'px';
-    wrapper.prepend(displayBox);
+    dropSelect.style.height = height + 'px';
+    dropSelect.prepend(displayBox);
 
-    displayBox.addEventListener("click", (click) => {
-      triggerFocus(fakeTagInput);
-    });
+    let opener = document.createElement('div');
+    opener.id = originalSelector.id + "_bds_opener";
+    opener.classList.add("bds_opener");
+    opener.style.height = height + 'px';
+    opener.style.width = width + 'px';
+    dropSelect.appendChild(opener);
 
-    fakeTagInput.addEventListener("focus", (focus) => {
+    let optionWrapper = document.createElement('div');
+    optionWrapper.id = originalSelector.id + "_bds_optionwrapper";
+    optionWrapper.classList.add("bds_optionwrapper");
+    optionWrapper.style.top = height + 'px';
+    dropSelect.appendChild(optionWrapper);
+
+    opener.addEventListener("click", (click) => {
+      hideAll();
       dropSelect.classList.remove("closed");
       dropSelect.classList.add("open");
+      multiSelectMask.style.display = 'block';
     });
     
-    fakeTagInput.addEventListener("blur", (blur) => {
+    multiSelectMask.addEventListener("click", (click) => {
       dropSelect.classList.remove("open");
       dropSelect.classList.add("closed");
+      click.target.style.display = 'none';
     });
 
     let options = [...originalSelector.options];
@@ -91,6 +116,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
       divOption.classList.add('bds_option');
       divOption.setAttribute('data-bds-value', option.value);
       divOption.setAttribute('data-bds-label', option.label);
+      divOption.style.width = width + 'px';
 
       // if first option is disabled and selected assume it is a placeholder label
       if(i==1 && option.disabled && option.selected) {
@@ -102,30 +128,38 @@ document.addEventListener("DOMContentLoaded", (event) => {
         // Select any that should be selected and add the tag
         if(option.hasAttribute('selected')) {
           divOption.classList.add('selected');
-          let tag = document.createElement('span');
+          let tag = document.createElement('div');
           tag.setAttribute('data-bds-value', option.value);
           tag.setAttribute('data-bds-label', option.label);
           tag.innerHTML = option.label;
+
+          let closer = createCloser(originalSelector, option, divOption);
+          tag.appendChild(closer);
+
           displayBox.appendChild(tag);
           fakeTagInput.placeholder = '';
         }
 
         // Add the mousedown event that adds the tag
-        divOption.addEventListener("mousedown", (mousedown) => {
+        divOption.addEventListener("click", (click) => {
           if(option.hasAttribute('selected')) {
             option.removeAttribute("selected");
-            mousedown.target.classList.remove('selected');
+            click.target.classList.remove('selected');
             let clearElements = document.querySelectorAll('#' + originalSelector.id + "_bds_displaybox > [data-bds-value='" + option.value + "']");
             let tagsToClear = [...clearElements];
             console.log(tagsToClear);
             tagsToClear.forEach((tag) => tag.remove());
           } else {
             option.setAttribute("selected", "selected");
-            mousedown.target.classList.add('selected');
-            let tag = document.createElement('span');
+            click.target.classList.add('selected');
+            let tag = document.createElement('div');
             tag.setAttribute('data-bds-value', option.value);
             tag.setAttribute('data-bds-label', option.label);
             tag.innerHTML = option.label;
+
+            let closer = createCloser(originalSelector, option, divOption);
+            tag.appendChild(closer);
+
             displayBox.appendChild(tag);
           }
 
@@ -135,25 +169,39 @@ document.addEventListener("DOMContentLoaded", (event) => {
         });
 
         divOption.innerHTML = option.label;
-        dropSelect.appendChild(divOption);
+        optionWrapper.appendChild(divOption);
       }
     });
   }
 
-  function triggerFocus(element) {
-    let eventType = "onfocusin" in element ? "focusin" : "focus";
-    let bubbles = "onfocusin" in element;
-    let event;
+  function hideAll() {
+    let multiSelectors = document.querySelectorAll('[data-boudlo-selecta]');
+    // console.log(multiSelectors);
+    let multiSelectorArr = [...multiSelectors]; // converts NodeList to Array
 
-    if ("createEvent" in document) {
-        event = document.createEvent("Event");
-        event.initEvent(eventType, bubbles, true);
-    }
-    else if ("Event" in window) {
-        event = new Event(eventType, { bubbles: bubbles, cancelable: true });
-    }
+    multiSelectorArr.forEach(selector => {
+      let dropSelect = document.getElementById(selector.id + "_bds_dropselect");
+      if(dropSelect && typeof dropSelect !== 'undefined') {
+        dropSelect.classList.remove("open");
+        dropSelect.classList.add("closed");
+      }
+    });
+  }
 
-    element.focus();
-    element.dispatchEvent(event);
+  function createCloser(selector, option, divOption) {
+    let closer = document.createElement('span');
+    closer.classList.add('closer');
+    closer.addEventListener("click", (click) => {
+      option.removeAttribute("selected");
+      divOption.classList.remove('selected');
+      let clearElements = document.querySelectorAll('#' + selector.id + "_bds_displaybox > [data-bds-value='" + option.value + "']");
+      let tagsToClear = [...clearElements];
+      console.log(tagsToClear);
+      tagsToClear.forEach((tag) => tag.remove());
+    });
+
+    closer.innerHTML = '&#x2715;';
+
+    return closer;
   }
 });

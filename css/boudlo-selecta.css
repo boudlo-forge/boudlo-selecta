@@ -1,3 +1,15 @@
+.bds_multiselect_mask {
+  opacity:0;
+  background-color:#ccc;
+  position:fixed;
+  width:100%;
+  height:100%;
+  top:0px;
+  left:0px;
+  z-index:97;
+  display: none;
+}
+
 .bds_wrapper {
   position: relative;
   display: inline;
@@ -14,14 +26,13 @@
 
 .bds_dropselect.open {
   z-index: 101;
-  padding-top: 0.2em;
   border-left: 1px solid;
   border-right: 1px solid;
   border-bottom: 1px solid;
   box-shadow: 0 1px 7px 0 rgba(0,0,0,0.4), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
-.bds_dropselect > .bds_option {
+.bds_dropselect > .bds_optionwrapper > .bds_option {
   background-color: #bbb;
   font-size: 1em;
   padding: 0.1em 0.1em;
@@ -29,47 +40,44 @@
   cursor: pointer;
 }
 
-.bds_option.selected {
+.bds_dropselect > .bds_optionwrapper > .bds_option.selected {
   background-color: #eeffee;
 }
 
-.bds_option.selected:after {
+.bds_dropselect > .bds_optionwrapper > .bds_option.selected:after {
   content: '\2713';
-  display: inline-block;
-  float: right;
+  right: 0;
   color: green;
   padding: 0 6px 0 0;
   position: absolute;
 }
 
-.bds_dropselect > .bds_option:hover {
+.bds_dropselect > .bds_optionwrapper >  .bds_option:hover {
   background-color: #666;
   color: white;
 }
 
-.bds_dropselect > .bds_option.selected:hover {
+.bds_dropselect > .bds_optionwrapper >  .bds_option.selected:hover {
   background-color: #FEE;
   color: revert;
 }
 
-.bds_option.selected:hover:after {
+.bds_dropselect > .bds_optionwrapper > .bds_option.selected:hover:after {
   content: '\2A09';
-  display: inline-block;
   float: right;
   color: red;
   padding: 0 6px 0 0;
 }
 
-.bds_dropselect.closed > .bds_option {
+.bds_dropselect.closed > .bds_optionwrapper > .bds_option {
   display: none;
 }
 
-.bds_dropselect.closed > .bds_option.disabled {
+.bds_dropselect.closed > .bds_optionwrapper > .bds_option.disabled {
   display: block;
 }
 
 .bds_displaybox {
-  position: absolute;
   z-index: 99;
   display: inline-block;
   white-space: nowrap;
@@ -89,13 +97,39 @@
   display: none;
 }
 
-.bds_displaybox span {
-  margin: 0.3em 0 0 0.3em;
-  padding: 0.1em;
+.bds_displaybox > div {
+  z-index: 103;
+  position: relative;
+  margin: 0.8em 0 0 0.8em;
+  padding: 0.1em 1.6em 0.1em 0.1em;
   font-size: 0.7em;
   display: inline-block;
   max-width: 70%;
   overflow-x: hidden;
   border-radius: 2px;
   background-color: #bbb;
+  white-space: nowrap;
+}
+
+.bds_displaybox > div > span.closer {
+  z-index: 104;
+  position: absolute;
+  background-color: #bbb;
+  -webkit-box-shadow: -4px 0px 3px 0px rgba(187,187,187,1);
+  -moz-box-shadow: -4px 0px 3px 0px rgba(187,187,187,1);
+  box-shadow: -4px 0px 3px 0px rgba(187,187,187,1);
+  right:0;
+  display: inline.block;
+  padding: 0 0.2em;
+  cursor: pointer;
+}
+
+.bds_opener {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.bds_optionwrapper {
+  position: absolute;
 }
