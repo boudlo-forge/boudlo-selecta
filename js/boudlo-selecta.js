@@ -68,29 +68,19 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     wrapper.prepend(fakeTagInput);
 
-    var width = fakeTagInput.offsetWidth;
-    var height = fakeTagInput.offsetHeight;
-    wrapper.style.height = height + 'px';
-
     let displayBox = document.createElement("div");
     displayBox.id = originalSelector.id + "_bds_displaybox";
     displayBox.classList.add("bds_displaybox");
-    displayBox.style.height = height + 'px';
-    displayBox.style.width = width + 'px';
-    dropSelect.style.height = height + 'px';
     dropSelect.prepend(displayBox);
 
     let opener = document.createElement('div');
     opener.id = originalSelector.id + "_bds_opener";
     opener.classList.add("bds_opener");
-    opener.style.height = height + 'px';
-    opener.style.width = width + 'px';
     dropSelect.appendChild(opener);
 
     let optionWrapper = document.createElement('div');
     optionWrapper.id = originalSelector.id + "_bds_optionwrapper";
     optionWrapper.classList.add("bds_optionwrapper");
-    optionWrapper.style.top = height + 'px';
     dropSelect.appendChild(optionWrapper);
 
     opener.addEventListener("click", (click) => {
@@ -116,7 +106,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
       divOption.classList.add('bds_option');
       divOption.setAttribute('data-bds-value', option.value);
       divOption.setAttribute('data-bds-label', option.label);
-      divOption.style.width = width + 'px';
 
       // if first option is disabled and selected assume it is a placeholder label
       if(i==1 && option.disabled && option.selected) {
@@ -174,6 +163,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
     });
   }
 
+  resizeItAll();
+  window.onresize = resizeItAll;
+
   function hideAll() {
     let multiSelectors = document.querySelectorAll('[data-boudlo-selecta]');
     // console.log(multiSelectors);
@@ -203,5 +195,51 @@ document.addEventListener("DOMContentLoaded", (event) => {
     closer.innerHTML = '&#x2715;';
 
     return closer;
+  }
+
+  function resizeItAll() {
+
+    let selectors = document.querySelectorAll('.bds_wrapper');
+    // console.log(multiSelectors);
+    let selectorArr = [...selectors]; // converts NodeList to Array
+
+    selectorArr.forEach(selector => {
+
+      let fakeTagInput = selector.querySelector('.bds_fakeTagInput');
+      
+      if(fakeTagInput && typeof fakeTagInput !== 'undefined') {
+        let width = fakeTagInput.offsetWidth;
+        let height = fakeTagInput.offsetHeight;
+
+        selector.style.height = height + 'px';
+
+        let displayBox = selector.querySelector('.bds_displaybox');
+
+        if(displayBox && typeof displayBox !== 'undefined') {
+          displayBox.style.height = height + 'px';
+          displayBox.style.width = width + 'px';
+        }
+
+
+        let dropSelect = selector.querySelector('.bds_dropselect');
+
+        if(dropSelect && typeof dropSelect !== 'undefined') {
+          dropSelect.style.height = height + 'px';
+        }
+
+        let optionWrapper = selector.querySelector('.bds_optionwrapper');
+
+        if(optionWrapper && typeof optionWrapper !== 'undefined') {
+          optionWrapper.style.top = height + 'px';
+        }
+
+        let opener = selector.querySelector('.bds_opener');
+
+        if(opener && typeof opener !== 'undefined') {
+          opener.style.height = height + 'px';
+          opener.style.width = width + 'px';
+        }
+      }
+    });
   }
 });
