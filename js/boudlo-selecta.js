@@ -204,7 +204,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
     let selectorArr = [...selectors]; // converts NodeList to Array
 
     selectorArr.forEach(selector => {
-
       let fakeTagInput = selector.querySelector('.bds_fakeTagInput');
       
       if(fakeTagInput && typeof fakeTagInput !== 'undefined') {
@@ -219,7 +218,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
           displayBox.style.height = height + 'px';
           displayBox.style.width = width + 'px';
         }
-
 
         let dropSelect = selector.querySelector('.bds_dropselect');
 
